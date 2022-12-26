@@ -1,17 +1,9 @@
+pub mod objects;
+
 use actix_web::{guard, web, web::Data, App, HttpResponse, HttpServer, Result};
-use async_graphql::{http::GraphiQLSource, EmptyMutation, EmptySubscription, Object, Schema};
+use async_graphql::{http::GraphiQLSource, EmptyMutation, EmptySubscription, Schema};
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
-
-type SimpleQuerySchema = Schema<Query, EmptyMutation, EmptySubscription>;
-struct Query;
-
-#[Object]
-impl Query {
-    async fn hello(&self, message: String) -> String {
-        // &'static str
-        message
-    }
-}
+use objects::{SimpleQuerySchema, Query};
 
 async fn index(schema: web::Data<SimpleQuerySchema>, req: GraphQLRequest) -> GraphQLResponse {
     schema.execute(req.into_inner()).await.into()
