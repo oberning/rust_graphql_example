@@ -1160,6 +1160,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust-graphql-example"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "async-graphql",
+ "async-graphql-actix-web",
+]
+
+[[package]]
 name = "rustc_version"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1315,15 +1324,6 @@ dependencies = [
  "redox_syscall",
  "remove_dir_all",
  "winapi",
-]
-
-[[package]]
-name = "test1"
-version = "0.1.0"
-dependencies = [
- "actix-web",
- "async-graphql",
- "async-graphql-actix-web",
 ]
 
 [[package]]
