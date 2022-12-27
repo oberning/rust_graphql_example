@@ -1,23 +1,10 @@
 use async_graphql::{EmptyMutation, EmptySubscription, Object, Schema};
 
+#[macro_use]
+mod utils;
 
 pub type SimpleQuerySchema = Schema<Query, EmptyMutation, EmptySubscription>;
 pub struct Query;
-
-macro_rules! bool_lambda {
-    ($a:expr, "integer") => {
-        match $a {
-            0 => |_, _| true,
-            _ => |x, y| x == y,
-        }
-    };
-    ($a:ident, "string") => {
-        match $a.as_str() {
-            "" => |_, _| true,
-            _ => |x, y| x == y,
-        }
-    };
-}
 
 #[Object]
 impl Query {
@@ -30,6 +17,7 @@ impl Query {
         #[graphql(default)] forename: String,
         #[graphql(default)] name: String,
         #[graphql(default)] age: i32) -> Option<Person> {
+        
         let mut person_found: Option<Person> = None;
         let is_age = bool_lambda!(age, "integer");
         let is_forename = bool_lambda!(forename, "string");

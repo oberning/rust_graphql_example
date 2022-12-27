@@ -1,9 +1,9 @@
-pub mod objects;
-
 use actix_web::{guard, web, web::Data, App, HttpResponse, HttpServer, Result};
 use async_graphql::{http::GraphiQLSource, EmptyMutation, EmptySubscription, Schema};
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
 use objects::{SimpleQuerySchema, Query};
+
+mod objects;
 
 async fn index(schema: web::Data<SimpleQuerySchema>, req: GraphQLRequest) -> GraphQLResponse {
     schema.execute(req.into_inner()).await.into()
@@ -17,10 +17,8 @@ async fn index_graphiql() -> Result<HttpResponse> {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // create the schema
     let schema = Schema::build(Query, EmptyMutation, EmptySubscription).finish();
 
-    // start the http server
     println!("GraphiQL: http://localhost:8000");
     HttpServer::new(move || {
         App::new()
