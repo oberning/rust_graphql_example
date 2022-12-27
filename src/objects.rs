@@ -16,21 +16,19 @@ impl Query {
         &self, 
         #[graphql(default)] forename: String,
         #[graphql(default)] name: String,
-        #[graphql(default)] age: i32) -> Option<Person> {
-        
-        let mut person_found: Option<Person> = None;
-        let is_age = bool_lambda!(age, "integer");
-        let is_forename = bool_lambda!(forename, "string");
-        let is_name = bool_lambda!(name, "string");
+        #[graphql(default)] age: i32) -> Vec<Person> {
+        let mut persons_found = Vec::<Person>::new();
+        let is_age = bool_lambda!(age, i32, 0);
+        let is_forename = bool_lambda!(forename.as_str(), &str, "");
+        let is_name = bool_lambda!(name.as_str(), &str, "");
         for person in person_data().iter() {
             if is_age(person.age, age) 
                 && is_forename(&person.forename, &forename)
                 && is_name(&person.name, &name) {
-                person_found = Some(person.clone());
-                break;
+                persons_found.push(person.clone());
             }
         }
-        person_found
+        persons_found
     }
 }
 
@@ -77,6 +75,11 @@ fn person_data() -> Vec<Person> {
             name: String::from("von Kaer Morhen"),
             forename: String::from("Vesemir"),
             age: 250,
+        },
+        Person {
+            name: String::from("von Vengerberg"),
+            forename: String::from("Ciri"),
+            age: 25,
         },
     ]
 }

@@ -1,13 +1,7 @@
 macro_rules! bool_lambda {
-    ($a:ident, "integer") => {
+    ($a:expr, $type:ty, $b:expr) => {
         match $a {
-            0 => |_, _| true,
-            _ => |x, y| x == y,
-        }
-    };
-    ($a:ident, "string") => {
-        match $a.as_str() {
-            "" => |_, _| true,
+            $b => |_, _| true,
             _ => |x, y| x == y,
         }
     };
