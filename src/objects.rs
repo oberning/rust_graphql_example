@@ -11,11 +11,37 @@ impl Query {
         message
     }
 
-    async fn find_person_by_age(&self, #[graphql(default)] age: i32) -> Option<Person> {
-        person_data().into_iter().find(|x| x.age == age)
+    async fn find_person(
+        &self, 
+        #[graphql(default)] forename: String,
+        #[graphql(default)] name: String,
+        #[graphql(default)] age: i32) -> Option<Person> {
+        let mut person_found: Option<Person> = None;
+        let is_age: fn(i32, i32) -> bool = match age {
+            0 => |_, _| true,
+            _ => |x, y| x == y,
+        };
+        let is_forename: fn(&str, &str) -> bool = match forename.as_str() {
+            "" => |_, _| true,
+            _ => |x, y| x == y,
+        };
+        let is_name: fn(&str, &str) -> bool = match name.as_str() {
+            "" => |_, _| true,
+            _ => |x, y| x == y,
+        };
+        for person in person_data().iter() {
+            if is_age(person.age, age) 
+                && is_forename(&person.forename, &forename)
+                && is_name(&person.name, &name) {
+                person_found = Some(person.clone());
+                break;
+            }
+        }
+        person_found
     }
 }
 
+#[derive(Clone)]
 struct Person {
     name: String,
     forename: String,
