@@ -4,10 +4,24 @@ use async_graphql::{EmptyMutation, EmptySubscription, Object, Schema};
 pub type SimpleQuerySchema = Schema<Query, EmptyMutation, EmptySubscription>;
 pub struct Query;
 
+macro_rules! bool_lambda {
+    ($a:expr, "integer") => {
+        match $a {
+            0 => |_, _| true,
+            _ => |x, y| x == y,
+        }
+    };
+    ($a:ident, "string") => {
+        match $a.as_str() {
+            "" => |_, _| true,
+            _ => |x, y| x == y,
+        }
+    };
+}
+
 #[Object]
 impl Query {
     async fn hello(&self, message: String) -> String {
-        // &'static str
         message
     }
 
@@ -17,18 +31,9 @@ impl Query {
         #[graphql(default)] name: String,
         #[graphql(default)] age: i32) -> Option<Person> {
         let mut person_found: Option<Person> = None;
-        let is_age: fn(i32, i32) -> bool = match age {
-            0 => |_, _| true,
-            _ => |x, y| x == y,
-        };
-        let is_forename: fn(&str, &str) -> bool = match forename.as_str() {
-            "" => |_, _| true,
-            _ => |x, y| x == y,
-        };
-        let is_name: fn(&str, &str) -> bool = match name.as_str() {
-            "" => |_, _| true,
-            _ => |x, y| x == y,
-        };
+        let is_age = bool_lambda!(age, "integer");
+        let is_forename = bool_lambda!(forename, "string");
+        let is_name = bool_lambda!(name, "string");
         for person in person_data().iter() {
             if is_age(person.age, age) 
                 && is_forename(&person.forename, &forename)
