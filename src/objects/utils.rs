@@ -1,5 +1,5 @@
 macro_rules! bool_lambda {
-    ($a:expr, "integer") => {
+    ($a:ident, "integer") => {
         match $a {
             0 => |_, _| true,
             _ => |x, y| x == y,
