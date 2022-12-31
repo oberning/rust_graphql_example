@@ -22,7 +22,7 @@ async fn main() -> std::io::Result<()> {
     println!("GraphiQL: http://localhost:8000");
     HttpServer::new(move || {
         App::new()
-            .app_data(Data::new(schema.clone()))
+            .app_data(Data::new(schema.to_owned()))
             .service(web::resource("/").guard(guard::Post()).to(index))
             .service(web::resource("/").guard(guard::Get()).to(index_graphiql))
     })
