@@ -1,11 +1,12 @@
-use async_graphql::{EmptyMutation, EmptySubscription, Object, Schema};
+use async_graphql::{EmptySubscription, Object, Schema};
 use lazy_static::lazy_static;
 
 #[macro_use]
 mod utils;
 
-pub type SimpleQuerySchema = Schema<Query, EmptyMutation, EmptySubscription>;
+pub type SimpleQuerySchema = Schema<Query, Mutation, EmptySubscription>;
 pub struct Query;
+pub struct Mutation;
 
 lazy_static! {
     static ref PERSONS: Vec<Person> = vec![
@@ -63,6 +64,24 @@ impl Query {
         }
         persons_found
     }
+}
+
+#[Object]
+impl Mutation {
+    async fn create_person(
+        &self,
+        #[graphql(default)] forename: String,
+        #[graphql(default)] name: String,
+        #[graphql(default)] age: i32,) -> Vec<Person> {
+        let person = Person{
+                forename,
+                name,
+                age,
+            };
+        let mut persons = PERSONS.to_owned();
+        persons.push(person);
+        persons
+        }
 }
 
 #[derive(Clone, Debug)]
