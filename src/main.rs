@@ -1,7 +1,7 @@
 use actix_web::{guard, web, web::Data, App, HttpResponse, HttpServer, Result};
-use async_graphql::{http::GraphiQLSource, EmptyMutation, EmptySubscription, Schema};
+use async_graphql::{http::GraphiQLSource, EmptySubscription, Schema};
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
-use objects::{SimpleQuerySchema, Query};
+use objects::{SimpleQuerySchema, Query, Mutation};
 
 mod objects;
 
@@ -17,7 +17,7 @@ async fn index_graphiql() -> Result<HttpResponse> {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let schema = Schema::build(Query, EmptyMutation, EmptySubscription).finish();
+    let schema = Schema::build(Query, Mutation, EmptySubscription).finish();
 
     println!("GraphiQL: http://localhost:8000");
     HttpServer::new(move || {
