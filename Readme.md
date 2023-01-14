@@ -1,17 +1,14 @@
 # Example with GraphQL in Rust
-This is a rather simple example for GraphQL in Rust - only using Queries.
-For the data, a vector is used with the help of the `lazy_static!` macro (or crate respectively).
-
-Worth mentioning: The creation and usage of an own macro to create a closure for a primitive search for values for the given fields in the GraphQL query.
+This is a more advanced but yet simple example for GraphQL in Rust.
+For the data, SQLite and the [diesel](https://diesel.rs) framework is used.
 
 Just perform a `cargo run` and browse to http://127.0.0.1:8000.
 
 In the query field just enter the following example:
 ```
 {
-   findPerson(name: "von Vengerberg", age: 25)
+   findPerson(name: "von V%", age: 25)
    { forename, name, age  }
 }
 ```
-
-If `, age:25` is removed from the previous query, the query returns two persons.
+For the age the query uses `>=` (`ge`) and for the name `like` with possibility to use the SQL wildcard `%`.

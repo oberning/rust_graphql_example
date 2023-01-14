@@ -1,3 +1,6 @@
+pub mod schema;
+
+#[macro_export]
 macro_rules! bool_lambda {
     ($a:expr, $type:ty, $b:expr) => {
         match $a {
