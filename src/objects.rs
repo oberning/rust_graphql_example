@@ -65,7 +65,7 @@ impl Mutation {
 #[derive(Clone, Debug, Queryable, Insertable)]
 #[diesel(table_name = schema::persons)]
 struct Person {
-    id: Option<i32>, // Changed toid -> Nullable<Integer> in schema.rs
+    id: Option<i32>, // Changed to id -> Nullable<Integer> in schema.rs
     name: String,
     forename: String,
     age: i32,
