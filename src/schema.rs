@@ -2,7 +2,7 @@
 
 diesel::table! {
     persons (id) {
-        id -> Integer,
+        id -> Nullable<Integer>,
         name -> Text,
         forename -> Text,
         age -> Integer,

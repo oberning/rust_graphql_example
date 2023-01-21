@@ -1,54 +1,19 @@
 use async_graphql::{EmptySubscription, Object, Schema};
+use diesel::insert_into;
 use diesel::prelude::*;
 use diesel::SqliteConnection;
 use dotenvy::dotenv;
-use lazy_static::lazy_static;
 use rust_graphql_example::schema;
 use std::env;
+use self::schema::persons::dsl;
+use diesel::result::Error;
 
 pub type SimpleQuerySchema = Schema<Query, Mutation, EmptySubscription>;
 pub struct Query;
 pub struct Mutation;
 
-
-lazy_static! {
-    static ref PERSONS: Vec<Person> = vec![
-        Person {
-            id: 0,
-            name: String::from("von Riva"),
-            forename: String::from("Geralt"),
-            age: 100,
-        },
-        Person {
-            id: 1,
-            name: String::from("Merigold"),
-            forename: String::from("Triss"),
-            age: 50,
-        },
-        Person {
-            id: 2,
-            name: String::from("von Vengerberg"),
-            forename: String::from("Yennefer"),
-            age: 95,
-        },
-        Person {
-            id: 3,
-            name: String::from("von Kaer Morhen"),
-            forename: String::from("Vesemir"),
-            age: 250,
-        },
-        Person {
-            id: 4,
-            name: String::from("von Vengerberg"),
-            forename: String::from("Ciri"),
-            age: 25,
-        },
-    ];
-}
-
 pub fn sqlite_connection() -> SqliteConnection {
     dotenv().ok();
-
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set in the .env file");
     SqliteConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
@@ -62,7 +27,7 @@ impl Query {
         #[graphql(default)] name: String,
         #[graphql(default)] age: i32,
     ) -> Vec<Person> {
-        use self::schema::persons::dsl;
+        //use self::schema::persons::dsl;
         let connection = &mut sqlite_connection();
         let mut query = dsl::persons.into_boxed();
         if name != "" { query = query.filter(dsl::name.like(name)) };
@@ -82,22 +47,25 @@ impl Mutation {
         #[graphql(default)] forename: String,
         #[graphql(default)] name: String,
         #[graphql(default)] age: i32,
-    ) -> Vec<Person> {
+    ) -> Result<usize, Error> {
+        let connection = &mut sqlite_connection();
         let person = Person {
-            id: 1000,
+            id: None,
             forename,
             name,
             age,
         };
-        let mut persons = PERSONS.to_owned();
-        persons.push(person);
-        persons
+        let result = insert_into(dsl::persons)
+            .values(person.clone())
+            .execute(connection);
+        result
     }
 }
 
-#[derive(Clone, Debug, Queryable)]
+#[derive(Clone, Debug, Queryable, Insertable)]
+#[diesel(table_name = schema::persons)]
 struct Person {
-    id: i32,
+    id: Option<i32>, // Changed toid -> Nullable<Integer> in schema.rs
     name: String,
     forename: String,
     age: i32,
@@ -105,7 +73,7 @@ struct Person {
 
 #[Object]
 impl Person {
-    async fn id(&self) -> i32 {
+    async fn id(&self) -> Option<i32> {
         self.id
     }
 
